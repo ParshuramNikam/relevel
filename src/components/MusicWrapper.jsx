@@ -1,5 +1,6 @@
 import React from 'react'
 import MusicCard from './MusicCard';
+import SearchMusic from './SearchMusic';
 
 const data = require('../playlist.json');
 
@@ -20,25 +21,62 @@ const imageData = [
 
 const MusicWrapper = () => {
     const [audio, setAudio] = React.useState();
+    const [musicdata, setMusicData] = React.useState(data);
 
+    const [musicFilter, setMusicFilter] = React.useState();
+    const [filterValue, setFilterValue] = React.useState();
+
+    const onFilterApply = () => {
+        if (musicFilter === "genre") {
+            if (filterValue === "all") {
+                setMusicData(data);
+            }
+            else {
+                setMusicData(data.filter((item) => item.genre === filterValue));
+            }
+        }
+        else if (musicFilter === "relese_year") {
+            if (filterValue === "all") {
+                setMusicData(data);
+            }
+            else {
+                if (filterValue === "2016") {
+                    setMusicData([data[1], data[2], data[4], data[5], data[8]]);
+                } else if (filterValue === "2017") {
+                    setMusicData([data[3]]);
+                } else {
+                    setMusicData(data);
+                }
+            }
+        } else if (musicFilter === "username") {
+            setMusicData(data.filter((item) => item.genre.includes(filterValue)));
+        } else if (musicFilter === "title") {
+            setMusicData(data.filter((item) => item.genre.includes(filterValue)));
+        }
+
+    }
 
     return (
-        <div className='music-wrapper'>
-            {
-                data.map((item, index) => {
-                    return (
-                        <MusicCard
-                            key={index}
-                            image={imageData[index]}
-                            title={item.title}
-                            artist={item.artist}
-                            genre={item.genre}
-                            audio={audio}
-                            stream_url={item.stream_url}
-                            setAudio={setAudio} />
-                    )
-                })
-            }
+        <div className="music-container">
+            <SearchMusic onFilterApply={onFilterApply} filterValue={filterValue} setFilterValue={setFilterValue} musicFilter={musicFilter} setMusicFilter={setMusicFilter} />
+
+            <div className='music-wrapper'>
+                {
+                    musicdata.map((item, index) => {
+                        return (
+                            <MusicCard
+                                key={index}
+                                image={imageData[index]}
+                                title={item.title}
+                                artist={item.artist}
+                                genre={item.genre}
+                                audio={audio}
+                                stream_url={item.stream_url}
+                                setAudio={setAudio} />
+                        )
+                    })
+                }
+            </div>
         </div>
     )
 }
